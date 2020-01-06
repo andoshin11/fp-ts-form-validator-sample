@@ -1,148 +1,119 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-          target="_blank"
-          rel="noopener"
-          >babel</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript"
-          target="_blank"
-          rel="noopener"
-          >typescript</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa"
-          target="_blank"
-          rel="noopener"
-          >pwa</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-          target="_blank"
-          rel="noopener"
-          >eslint</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-unit-jest"
-          target="_blank"
-          rel="noopener"
-          >unit-jest</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-e2e-cypress"
-          target="_blank"
-          rel="noopener"
-          >e2e-cypress</a
-        >
-      </li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li>
-        <a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-      </li>
-      <li>
-        <a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-          >Forum</a
-        >
-      </li>
-      <li>
-        <a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-          >Community Chat</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-          >Twitter</a
-        >
-      </li>
-      <li>
-        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-      </li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li>
-        <a href="https://router.vuejs.org" target="_blank" rel="noopener"
-          >vue-router</a
-        >
-      </li>
-      <li>
-        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-devtools#vue-devtools"
-          target="_blank"
-          rel="noopener"
-          >vue-devtools</a
-        >
-      </li>
-      <li>
-        <a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-          >vue-loader</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-          rel="noopener"
-          >awesome-vue</a
-        >
-      </li>
-    </ul>
+    <form @submit.prevent="submit">
+      <label class="block">
+        <span class="label">User Name</span>
+        <Input
+          type="text"
+          :errors="formErrors.username"
+          v-model="fields.username"
+        />
+      </label>
+      <label class="block">
+        <span class="label">Password</span>
+        <Input
+          type="password"
+          :errors="formErrors.password"
+          v-model="fields.password"
+        />
+      </label>
+      <input type="submit" value="Submit" :disabled="!canSubmit">
+    </form>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import Input from '@/components/Input.vue'
+import { isRight } from 'fp-ts/lib/Either'
+import { LoginForm, LoginFormValidator } from '@/utils/validators/login'
+import { range } from '@/utils/helper'
+
+interface IData {
+  fields: LoginForm
+}
+
+type FormErrors = { [key in keyof LoginForm]: string[] }
 
 export default Vue.extend({
   name: "HelloWorld",
+  components: {
+    Input
+  },
   props: {
     msg: String
+  },
+  data(): IData {
+    return {
+      fields: {
+        username: '',
+        password: ''
+      }
+    }
+  },
+  computed: {
+    formErrors(): FormErrors {
+      const empty: FormErrors = {
+        password: [],
+        username: []
+      }
+      const result = LoginFormValidator(this.fields)
+
+      return isRight(result) ? empty : result.left as FormErrors
+    },
+    canSubmit(): boolean {
+      const hasErrors = Object.values(this.formErrors).some(field => field.length !== 0)
+      return !hasErrors
+    },
+    maskedPassword(): string {
+      const { password } = this.fields
+      if (!password || password.length < 4) return ''
+      const head = range(0, password.length - 3).map(_ => '*')
+      const tail = password.slice(password.length - 2, password.length)
+      return [...head, ...tail].join('')
+    }
+  },
+  methods: {
+    submit() {
+
+      const message = `
+        Posting these info...
+        username: ${this.fields.username}
+        password: ${this.maskedPassword}
+      `
+
+      alert(message)
+    }
   }
 });
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
   margin: 40px 0 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
 a {
   color: #42b983;
+}
+
+.label {
+  margin-bottom: 8px;
+  font-size: 18px;
+  display: block;
+}
+
+.block {
+  margin-top: 24px;
+}
+
+input[type="submit"] {
+  margin-top: 24px;
+  font-size: 36px;
+}
+
+input[type="submit"][disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>
