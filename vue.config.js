@@ -1,3 +1,4 @@
 module.exports = {
-  outputDir: 'docs'
+  outputDir: 'docs',
+  publicPath: '/fp-ts-form-validator-sample/'
 }
