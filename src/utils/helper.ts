@@ -1,4 +1,5 @@
 import { PropOptions } from 'vue'
+import { FormData, FormErrors } from '@/lib/validation'
 
 export function oneOf(keys: string[]): PropOptions['validator'] {
   return value => {
@@ -27,4 +28,15 @@ export const maskStr = (str: string) => {
   const head = range(0, str.length - 3).map(_ => '*')
   const tail = str.slice(str.length - 2, str.length)
   return [...head, ...tail].join('')
+}
+
+/**
+ * Form
+ */
+export function createEmptyFormErrors<D extends FormData>(data: D): FormErrors<D> {
+  const empty: FormErrors<D> = Object.keys(data).reduce((acc, ac) => {
+    acc[ac as keyof D] = [] as string[]
+    return acc
+  }, {} as FormErrors<D>)
+  return empty
 }

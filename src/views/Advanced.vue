@@ -7,6 +7,7 @@
           type="text"
           :errors="formErrors.username"
           v-model="fields.username"
+          @blur="enableCheck('username')"
         />
       </label>
       <label class="block">
@@ -15,10 +16,14 @@
           type="password"
           :errors="formErrors.password"
           v-model="fields.password"
+          @blur="enableCheck('password')"
         />
       </label>
       <input type="submit" value="Submit" :disabled="!canSubmit">
     </form>
+    <div class="visualized">
+      <RawData :data="{ data: { fields, enableCheckFlg }, formErrors }" />
+    </div>
   </div>
 </template>
 
@@ -26,36 +31,50 @@
 import Vue from "vue";
 import { isRight } from 'fp-ts/lib/Either'
 import Input from '@/components/Input.vue'
+import RawData from '@/components/RawData'
 import { FormErrors } from '@/lib/validation'
 import { LoginForm, LoginFormValidator } from '@/utils/validators/login'
-import { maskStr } from '@/utils/helper'
+import { maskStr, createEmptyFormErrors } from '@/utils/helper'
 
 interface IData {
   fields: LoginForm
+  enableCheckFlg: { [key in keyof LoginForm]: boolean }
 }
 
 export default Vue.extend({
   name: "home",
   components: {
-    Input
+    Input,
+    RawData
   },
   data(): IData {
     return {
       fields: {
         username: '',
         password: ''
+      },
+      enableCheckFlg: {
+        username: false,
+        password: false
       }
     }
   },
   computed: {
     formErrors(): FormErrors<LoginForm> {
-      const empty: FormErrors<LoginForm> = {
-        password: [],
-        username: []
-      }
+      const { enableCheckFlg } = this
+      const empty = createEmptyFormErrors(this.fields)
       const result = LoginFormValidator(this.fields)
 
-      return isRight(result) ? empty : result.left as FormErrors<LoginForm>
+      if (isRight(result)) {
+        return empty
+      } else {
+        // use default value for the fields where associated enableCheckFlg == false
+        return Object.keys(result.left).reduce((acc, ac) => {
+          const field = ac as keyof LoginForm
+          if (enableCheckFlg[field]) acc[field] = result.left[ac]
+          return acc
+        }, empty)
+      }
     },
     canSubmit(): boolean {
       const hasErrors = Object.values(this.formErrors).some(field => field.length !== 0)
@@ -64,6 +83,8 @@ export default Vue.extend({
   },
   methods: {
     submit() {
+      this.enableAllChecks()
+      if (!this.canSubmit) return
 
       const message = `
         Posting these info...
@@ -72,11 +93,16 @@ export default Vue.extend({
       `
 
       alert(message)
-    }
+    },
+    enableCheck(str: keyof LoginForm) {
+      this.enableCheckFlg[str] = true
+    },
+    enableAllChecks() {
+      Object.keys(this.fields).forEach(field => this.enableCheck(field as keyof LoginForm))
+    },
   }
 });
 </script>
-
 
 <style scoped>
 .label {

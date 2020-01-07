@@ -3,7 +3,7 @@
     <h1>fp-ts form validator example</h1>
     <div id="nav">
       <router-link to="/">Basic Usage</router-link> |
-      <router-link to="/advanced">Advanced Usage</router-link>
+      <router-link to="/advanced">Trigger on blur</router-link>
     </div>
     <router-view />
   </div>
