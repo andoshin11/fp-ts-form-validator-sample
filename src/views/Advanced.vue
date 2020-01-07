@@ -1,6 +1,5 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
+  <div class="home">
     <form @submit.prevent="submit">
       <label class="block">
         <span class="label">User Name</span>
@@ -25,24 +24,20 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Input from '@/components/Input.vue'
 import { isRight } from 'fp-ts/lib/Either'
+import Input from '@/components/Input.vue'
+import { FormErrors } from '@/lib/validation'
 import { LoginForm, LoginFormValidator } from '@/utils/validators/login'
-import { range } from '@/utils/helper'
+import { maskStr } from '@/utils/helper'
 
 interface IData {
   fields: LoginForm
 }
 
-type FormErrors = { [key in keyof LoginForm]: string[] }
-
 export default Vue.extend({
-  name: "HelloWorld",
+  name: "home",
   components: {
     Input
-  },
-  props: {
-    msg: String
   },
   data(): IData {
     return {
@@ -53,25 +48,18 @@ export default Vue.extend({
     }
   },
   computed: {
-    formErrors(): FormErrors {
-      const empty: FormErrors = {
+    formErrors(): FormErrors<LoginForm> {
+      const empty: FormErrors<LoginForm> = {
         password: [],
         username: []
       }
       const result = LoginFormValidator(this.fields)
 
-      return isRight(result) ? empty : result.left as FormErrors
+      return isRight(result) ? empty : result.left as FormErrors<LoginForm>
     },
     canSubmit(): boolean {
       const hasErrors = Object.values(this.formErrors).some(field => field.length !== 0)
       return !hasErrors
-    },
-    maskedPassword(): string {
-      const { password } = this.fields
-      if (!password || password.length < 4) return ''
-      const head = range(0, password.length - 3).map(_ => '*')
-      const tail = password.slice(password.length - 2, password.length)
-      return [...head, ...tail].join('')
     }
   },
   methods: {
@@ -80,7 +68,7 @@ export default Vue.extend({
       const message = `
         Posting these info...
         username: ${this.fields.username}
-        password: ${this.maskedPassword}
+        password: ${maskStr(this.fields.password)}
       `
 
       alert(message)
@@ -89,14 +77,8 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-a {
-  color: #42b983;
-}
 
+<style scoped>
 .label {
   margin-bottom: 8px;
   font-size: 18px;

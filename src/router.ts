@@ -12,6 +12,11 @@ export default new Router({
       path: "/",
       name: "home",
       component: Home
+    },
+    {
+      path: '/advanced',
+      name: 'advanced',
+      component: () => import(/* webpackChunkName: "advanced" */ "./views/Advanced.vue")
     }
   ]
 });

@@ -4,9 +4,16 @@ import * as R from 'fp-ts/lib/Record'
 import { pipe } from 'fp-ts/lib/pipeable';
 import { array } from 'fp-ts/lib/Array'
 
+/**
+ * Types
+ */
 type SingleError<T extends object = never> = { field: T extends never ? string : keyof T; error: string }
 
-export type Validator<D extends Record<string, unknown>> = (data: D) => E.Either<SingleError<D>, D>
+export type FormData = Record<string, unknown>
+
+export type FormErrors<D extends FormData> = { [key in keyof D]: string[] }
+
+export type Validator<D extends FormData> = (data: D) => E.Either<SingleError<D>, D>
 
 const applicativeValidation = E.getValidation(NEA.getSemigroup<SingleError>());
 
@@ -20,7 +27,7 @@ function lift<A>(
 }
 
 export function colletErrors(
-  data: Record<string, unknown>,
+  data: FormData,
   err: NEA.NonEmptyArray<SingleError>
 ): Record<string, string[]> {
   const emptyErrors = pipe(
@@ -36,7 +43,7 @@ export function colletErrors(
 }
 
 export function validateErrorMap<
-  D extends Record<string, unknown>,
+  D extends FormData,
   E extends SingleError
 >(
   rules: Array<(data: D) => E.Either<E, D>>

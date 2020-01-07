@@ -21,3 +21,10 @@ export const range = (min: number, max: number): number[] => {
   }
   return nums
 }
+
+export const maskStr = (str: string) => {
+  if (!str || str.length < 4) return ''
+  const head = range(0, str.length - 3).map(_ => '*')
+  const tail = str.slice(str.length - 2, str.length)
+  return [...head, ...tail].join('')
+}
