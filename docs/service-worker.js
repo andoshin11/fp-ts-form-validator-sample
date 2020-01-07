@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.e8dc676a3ce3228d8d89cd01aa0bd2db.js"
+  "/fp-ts-form-validator-sample/precache-manifest.35e3d0b05930271686541cead37ca1f9.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "fp-ts-form-validator"});
