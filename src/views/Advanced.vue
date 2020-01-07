@@ -19,7 +19,7 @@
           @blur="enableCheck('password')"
         />
       </label>
-      <input type="submit" value="Submit" :disabled="!canSubmit">
+      <input type="submit" value="Submit" :disabled="!canSubmit" />
     </form>
     <div class="visualized">
       <RawData :data="{ data: { fields, enableCheckFlg }, formErrors }" />
@@ -29,16 +29,16 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { isRight } from 'fp-ts/lib/Either'
-import Input from '@/components/Input.vue'
-import RawData from '@/components/RawData'
-import { FormErrors } from '@/lib/validation'
-import { LoginForm, LoginFormValidator } from '@/utils/validators/login'
-import { maskStr, createEmptyFormErrors } from '@/utils/helper'
+import { isRight } from "fp-ts/lib/Either";
+import Input from "@/components/Input.vue";
+import RawData from "@/components/RawData";
+import { FormErrors } from "@/lib/validation";
+import { LoginForm, LoginFormValidator } from "@/utils/validators/login";
+import { maskStr, createEmptyFormErrors } from "@/utils/helper";
 
 interface IData {
-  fields: LoginForm
-  enableCheckFlg: { [key in keyof LoginForm]: boolean }
+  fields: LoginForm;
+  enableCheckFlg: { [key in keyof LoginForm]: boolean };
 }
 
 export default Vue.extend({
@@ -50,56 +50,60 @@ export default Vue.extend({
   data(): IData {
     return {
       fields: {
-        username: '',
-        password: ''
+        username: "",
+        password: ""
       },
       enableCheckFlg: {
         username: false,
         password: false
       }
-    }
+    };
   },
   computed: {
     formErrors(): FormErrors<LoginForm> {
-      const { enableCheckFlg } = this
-      const empty = createEmptyFormErrors(this.fields)
-      const result = LoginFormValidator(this.fields)
+      const { enableCheckFlg } = this;
+      const empty = createEmptyFormErrors(this.fields);
+      const result = LoginFormValidator(this.fields);
 
       if (isRight(result)) {
-        return empty
+        return empty;
       } else {
         // use default value for the fields where associated enableCheckFlg == false
         return Object.keys(result.left).reduce((acc, ac) => {
-          const field = ac as keyof LoginForm
-          if (enableCheckFlg[field]) acc[field] = result.left[ac]
-          return acc
-        }, empty)
+          const field = ac as keyof LoginForm;
+          if (enableCheckFlg[field]) acc[field] = result.left[ac];
+          return acc;
+        }, empty);
       }
     },
     canSubmit(): boolean {
-      const hasErrors = Object.values(this.formErrors).some(field => field.length !== 0)
-      return !hasErrors
+      const hasErrors = Object.values(this.formErrors).some(
+        field => field.length !== 0
+      );
+      return !hasErrors;
     }
   },
   methods: {
     submit() {
-      this.enableAllChecks()
-      if (!this.canSubmit) return
+      this.enableAllChecks();
+      if (!this.canSubmit) return;
 
       const message = `
         Posting these info...
         username: ${this.fields.username}
         password: ${maskStr(this.fields.password)}
-      `
+      `;
 
-      alert(message)
+      alert(message);
     },
     enableCheck(str: keyof LoginForm) {
-      this.enableCheckFlg[str] = true
+      this.enableCheckFlg[str] = true;
     },
     enableAllChecks() {
-      Object.keys(this.fields).forEach(field => this.enableCheck(field as keyof LoginForm))
-    },
+      Object.keys(this.fields).forEach(field =>
+        this.enableCheck(field as keyof LoginForm)
+      );
+    }
   }
 });
 </script>

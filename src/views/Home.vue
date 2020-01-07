@@ -17,7 +17,7 @@
           v-model="fields.password"
         />
       </label>
-      <input type="submit" value="Submit" :disabled="!canSubmit">
+      <input type="submit" value="Submit" :disabled="!canSubmit" />
     </form>
     <div class="visualized">
       <RawData :data="{ data: { fields }, formErrors }" />
@@ -27,15 +27,15 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { isRight } from 'fp-ts/lib/Either'
-import Input from '@/components/Input.vue'
-import RawData from '@/components/RawData'
-import { FormErrors } from '@/lib/validation'
-import { LoginForm, LoginFormValidator } from '@/utils/validators/login'
-import { maskStr } from '@/utils/helper'
+import { isRight } from "fp-ts/lib/Either";
+import Input from "@/components/Input.vue";
+import RawData from "@/components/RawData";
+import { FormErrors } from "@/lib/validation";
+import { LoginForm, LoginFormValidator } from "@/utils/validators/login";
+import { maskStr } from "@/utils/helper";
 
 interface IData {
-  fields: LoginForm
+  fields: LoginForm;
 }
 
 export default Vue.extend({
@@ -47,41 +47,41 @@ export default Vue.extend({
   data(): IData {
     return {
       fields: {
-        username: '',
-        password: ''
+        username: "",
+        password: ""
       }
-    }
+    };
   },
   computed: {
     formErrors(): FormErrors<LoginForm> {
       const empty: FormErrors<LoginForm> = {
         password: [],
         username: []
-      }
-      const result = LoginFormValidator(this.fields)
+      };
+      const result = LoginFormValidator(this.fields);
 
-      return isRight(result) ? empty : result.left as FormErrors<LoginForm>
+      return isRight(result) ? empty : (result.left as FormErrors<LoginForm>);
     },
     canSubmit(): boolean {
-      const hasErrors = Object.values(this.formErrors).some(field => field.length !== 0)
-      return !hasErrors
+      const hasErrors = Object.values(this.formErrors).some(
+        field => field.length !== 0
+      );
+      return !hasErrors;
     }
   },
   methods: {
     submit() {
-
       const message = `
         Posting these info...
         username: ${this.fields.username}
         password: ${maskStr(this.fields.password)}
-      `
+      `;
 
-      alert(message)
+      alert(message);
     }
   }
 });
 </script>
-
 
 <style scoped>
 .label {

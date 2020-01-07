@@ -1,12 +1,12 @@
-import Vue from 'vue'
+import Vue from "vue";
 
 interface Props {
-  json: object
+  json: object;
 }
 
 export default Vue.extend<Props>({
   functional: true,
-  name: 'PrettyJson',
+  name: "PrettyJson",
   props: {
     json: {
       type: Object,
@@ -14,8 +14,8 @@ export default Vue.extend<Props>({
     }
   },
   render(h, ctx) {
-    const { props } = ctx
-    const stringified = JSON.stringify(props.json, null, 2)
-    return h('pre', stringified)
+    const { props } = ctx;
+    const stringified = JSON.stringify(props.json, null, 2);
+    return h("pre", stringified);
   }
-})
+});

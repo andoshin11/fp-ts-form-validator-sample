@@ -19,7 +19,11 @@
       v-on="inputListeners"
     />
     <datalist v-if="hasCandiates" :id="listId">
-      <option v-for="candidate in candidates" :key="candidate" :value="candidate" />
+      <option
+        v-for="candidate in candidates"
+        :key="candidate"
+        :value="candidate"
+      />
     </datalist>
     <ul v-if="hasError" class="errors">
       <li v-for="(error, i) in errors" :key="i" class="error">{{ error }}</li>
@@ -28,8 +32,8 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import { oneOf } from '@/utils/helper'
+import Vue from "vue";
+import { oneOf } from "@/utils/helper";
 
 export default Vue.extend({
   props: {
@@ -39,8 +43,19 @@ export default Vue.extend({
     },
     type: {
       type: String,
-      default: 'text',
-      validator: oneOf(['text', 'search', 'tel', 'email', 'date', 'password', 'url', 'time', 'number', 'file'])
+      default: "text",
+      validator: oneOf([
+        "text",
+        "search",
+        "tel",
+        "email",
+        "date",
+        "password",
+        "url",
+        "time",
+        "number",
+        "file"
+      ])
     },
     placeholder: {
       type: String,
@@ -64,7 +79,7 @@ export default Vue.extend({
     },
     value: {
       type: String,
-      default: ''
+      default: ""
     },
     listId: {
       type: String,
@@ -88,7 +103,7 @@ export default Vue.extend({
     },
     id: {
       type: String,
-      default: ''
+      default: ""
     },
     errors: {
       type: Array as () => string[],
@@ -96,8 +111,8 @@ export default Vue.extend({
     },
     outputType: {
       type: String,
-      default: 'string',
-      validator: oneOf(['string', 'number'])
+      default: "string",
+      validator: oneOf(["string", "number"])
     },
     loading: {
       type: Boolean,
@@ -106,35 +121,38 @@ export default Vue.extend({
   },
   computed: {
     hasCandiates(): boolean {
-      return this.candidates.length > 0
+      return this.candidates.length > 0;
     },
     disableAutocomplete(): boolean {
-      return this.hasCandiates || this.type === 'password'
+      return this.hasCandiates || this.type === "password";
     },
     hasError(): boolean {
-      return this.errors.length > 0
+      return this.errors.length > 0;
     },
     inputListeners(): Record<string, Function | Function[]> {
-      const vm = this
+      const vm = this;
       const data = {
         ...this.$listeners,
         input(e: { target: { value: string } }) {
-          vm.handleInput(vm, e.target.value)
+          vm.handleInput(vm, e.target.value);
         }
-      }
-      return data
+      };
+      return data;
     }
   },
   methods: {
     numerify(val: string | null): number | null {
-      return val === null ? null : Number(val)
+      return val === null ? null : Number(val);
     },
     handleInput<T extends Vue>(vm: T, value: string) {
-      const trim = value.trim()
-      vm.$emit('input', this.outputType === 'number' ? this.numerify(trim) : trim)
+      const trim = value.trim();
+      vm.$emit(
+        "input",
+        this.outputType === "number" ? this.numerify(trim) : trim
+      );
     }
   }
-})
+});
 </script>
 
 <style scoped>
@@ -146,22 +164,22 @@ export default Vue.extend({
   background: #fff;
 }
 
-input[type='text'],
-input[type='number'],
-input[type='email'],
-input[type='password'],
-input[type='search'] {
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"] {
   font-size: 15px;
-  background: #FFFFFF;
+  background: #ffffff;
   line-height: 32px;
   width: 312px;
   height: 32px;
   padding: 0px 8px 0px 8px;
   margin: 0px;
-  border-top: 2px solid #AAAAAA;
-  border-right: 2px solid #CCCCCC;
-  border-bottom: 2px solid #CCCCCC;
-  border-left: 2px solid #AAAAAA;
+  border-top: 2px solid #aaaaaa;
+  border-right: 2px solid #cccccc;
+  border-bottom: 2px solid #cccccc;
+  border-left: 2px solid #aaaaaa;
 }
 
 .Input[disabled] {
@@ -173,14 +191,14 @@ input[type='search'] {
   cursor: not-allowed;
 }
 
-input[type='file'] {
+input[type="file"] {
   display: none;
 }
 
 .hasError > input,
 .hasError > input:focus {
   position: relative;
-  border: solid 2px #AA0000;
+  border: solid 2px #aa0000;
 }
 
 ul {
@@ -188,7 +206,7 @@ ul {
 }
 
 .errors {
-  color: #AA0000;
+  color: #aa0000;
   font-weight: bold;
   font-size: 18px;
   margin: 8px 0 0;
