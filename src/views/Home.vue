@@ -19,6 +19,9 @@
       </label>
       <input type="submit" value="Submit" :disabled="!canSubmit">
     </form>
+    <div class="visualized">
+      <RawData :data="{ data: { fields }, formErrors }" />
+    </div>
   </div>
 </template>
 
@@ -26,6 +29,7 @@
 import Vue from "vue";
 import { isRight } from 'fp-ts/lib/Either'
 import Input from '@/components/Input.vue'
+import RawData from '@/components/RawData'
 import { FormErrors } from '@/lib/validation'
 import { LoginForm, LoginFormValidator } from '@/utils/validators/login'
 import { maskStr } from '@/utils/helper'
@@ -37,7 +41,8 @@ interface IData {
 export default Vue.extend({
   name: "home",
   components: {
-    Input
+    Input,
+    RawData
   },
   data(): IData {
     return {
