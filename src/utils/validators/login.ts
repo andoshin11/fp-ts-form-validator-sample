@@ -26,5 +26,5 @@ const isPasswordFormatValid: Validator<LoginForm> = data =>
 export const LoginFormValidator = validateErrorMap([
   isPasswordLengthValid,
   isPasswordFormatValid,
-  isUsernameLengthValid
+  isUsernameLengthValid,
 ]);
